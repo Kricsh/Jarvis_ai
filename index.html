@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#050816;color:#eaf6ff;
+ font-family:Arial,sans-serif;min-height:100vh;
+ display:flex;justify-content:center;align-items:center;
+ padding:20px
+}
+.app{width:100%;max-width:430px;text-align:center}
+h1{color:#42d9ff;letter-spacing:5px}
+.orb{
+ width:155px;height:155px;border-radius:50%;
+ margin:30px auto;border:3px solid #42d9ff;
+ box-shadow:0 0 25px #168dff,inset 0 0 25px #168dff;
+ display:grid;place-items:center;font-size:45px;
+ animation:pulse 2s infinite
+}
+@keyframes pulse{50%{box-shadow:0 0 45px #168dff,inset 0 0 40px #168dff}}
+#status{color:#7deaff;margin:20px}
+button{
+ border:0;border-radius:12px;padding:14px;margin:5px;
+ background:#087da8;color:white;font-size:16px
+}
+input{
+ width:100%;padding:14px;border-radius:10px;
+ border:1px solid #168dff;background:#101a30;
+ color:white;font-size:16px;margin-top:12px
+}
+#answer{
+ margin-top:20px;padding:15px;background:#101a30;
+ border-radius:12px;line-height:1.6;overflow-wrap:anywhere
+}
+.small{font-size:12px;color:#9db6ce}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>J.A.R.V.I.S</h1>
+<div class="small">PERSONAL AI ASSISTANT</div>
+<div class="orb">◉</div>
+<div id="status">SYSTEM ONLINE</div>
+<input id="question" placeholder="अपना सवाल लिखो...">
+<button onclick="ask()">पूछो</button>
+<button onclick="listen()">🎙️ बोलो</button>
+<div id="answer">नमस्ते! मैं JARVIS हूँ। मुझसे कुछ पूछो।</div>
+<p class="small">आवाज़ के लिए Chrome की अनुमति आवश्यक है।</p>
+</div>
+<script>
+function speak(text){
+ if(!("speechSynthesis" in window))return;
+ speechSynthesis.cancel();
+ let u=new SpeechSynthesisUtterance(text);
+ u.lang="hi-IN";
+ speechSynthesis.speak(u);
+}
+function ask(){
+ let q=document.getElementById("question").value.trim();
+ if(!q)return;
+ let a="तुमने पूछा: "+q+
+ ". मैं अभी शुरुआती JARVIS हूँ। असली AI जवाबों के लिए AI सेवा जोड़नी होगी।";
+ document.getElementById("answer").textContent=a;
+ speak(a);
+}
+function listen(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){
+  document.getElementById("status").textContent=
+  "इस ब्राउज़र में आवाज़ पहचान उपलब्ध नहीं है। Chrome में HTTPS पर खोलो।";
+  return;
+ }
+ let r=new SR();r.lang="hi-IN";
+ document.getElementById("status").textContent="सुन रहा हूँ...";
+ r.onresult=e=>{
+  document.getElementById("question").value=e.results[0][0].transcript;
+  document.getElementById("status").textContent="SYSTEM ONLINE";
+  ask();
+ };
+ r.onerror=()=>document.getElementById("status").textContent="फिर से कोशिश करो";
+ r.onend=()=>document.getElementById("status").textContent="SYSTEM ONLINE";
+ r.start();
+}
+</script>
+</body>
+</html>
